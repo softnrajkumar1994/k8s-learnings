@@ -26,6 +26,7 @@
         <dependency>
             <groupId>io.javaoperatorsdk</groupId>
             <artifactId>java-operator-sdk-spring-boot-starter</artifactId>
+
             <version>4.3.1</version>
         </dependency>
 
