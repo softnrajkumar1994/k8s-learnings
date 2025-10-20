@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-canary-old
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-canary-old
+  template:
+    metadata:
+      labels:
+        app: nginx-canary-old
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          command:
+            - sh
+            - -c
+            - echo "<h1>Welcome to RK Canary Old</h1>" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-canary-new
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-canary-new
+  template:
+    metadata:
+      labels:
+        app: nginx-canary-new
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          command:
+            - sh
+            - -c
+            - echo "<h1>Welcome to RK Canary New 1</h1>" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-canary-svc
+spec:
+  type: NodePort
+  selector:
+    # Points to both old & new pods
+    app: nginx-canary-old
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30084
